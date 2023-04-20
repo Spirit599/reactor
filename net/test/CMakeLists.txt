@@ -1,0 +1,7 @@
+
+
+add_executable(testEventLoop testEventLoop.cc)
+target_link_libraries(testEventLoop net)
+
+add_executable(testPoller testPoller.cc)
+target_link_libraries(testPoller net)
