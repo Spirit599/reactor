@@ -29,7 +29,7 @@ EpollPoller::~EpollPoller()
     ::close(epfd_);
 }
 
-Timestamp EpollPoller::poll(int timeoutMs, ChannelList* activeChannels)
+Timestamp EpollPoller::poll(int timeoutMs, ChannelList& activeChannels)
 {
     LOG_TRACE("fd total count %d", channelsMap_.size());
     int numEvents = ::epoll_wait(epfd_, &*events_.begin(), static_cast<int>(events_.size()), timeoutMs);
@@ -61,13 +61,13 @@ Timestamp EpollPoller::poll(int timeoutMs, ChannelList* activeChannels)
 }
 
 
-void EpollPoller::fillActiveChannels(int numEvents, ChannelList* activeChannels) const
+void EpollPoller::fillActiveChannels(int numEvents, ChannelList& activeChannels) const
 {
     for(int i = 0; i < numEvents; ++i)
     {
         Channel* channel =  static_cast<Channel*>(events_[i].data.ptr);
         channel->setRevents(events_[i].events);
-        activeChannels->emplace_back(channel);
+        activeChannels.emplace_back(channel);
     }
 }
 

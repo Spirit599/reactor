@@ -42,4 +42,30 @@ void EventLoop::loop()
 
     looping_ = true;
     quit_ = false;
+
+    LOG_TRACE("eventloop threadId_:%llu start loop", threadId_);
+
+    while(!quit_)
+    {
+        activeChannels_.clear();
+        pollReturnTime_ = poller_->poll(kPollTimeMs, activeChannels_);
+
+        eventHandling_ = true;
+        for(Channel* channel : activeChannels_)
+        {
+            curChannel_ = channel;
+            //todo
+        }
+        curChannel_ = nullptr;
+        eventHandling_ = false;
+    }
+
+    LOG_TRACE("eventloop threadId_:%llu end loop", threadId_);
+    looping_ = false;
+}
+
+void EventLoop::quit()
+{
+    LOG_TRACE("EventLoop::quit() threadId_:%llu", threadId_);
+    quit_ = true;
 }

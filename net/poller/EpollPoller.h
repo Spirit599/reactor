@@ -12,7 +12,7 @@ public:
     EpollPoller(EventLoop* loop);
     ~EpollPoller() override;
 
-    Timestamp poll(int timeoutMs, ChannelList* activeChannels) override;
+    Timestamp poll(int timeoutMs, ChannelList& activeChannels) override;
 
     void updateChannel(Channel* channel) override;
 
@@ -22,7 +22,7 @@ private:
     static const int kInitEventSize = 16;
 
 
-    void fillActiveChannels(int numEvents, ChannelList* activeChannel) const;
+    void fillActiveChannels(int numEvents, ChannelList& activeChannel) const;
 
     void update(int op, Channel* channel);
 

@@ -21,6 +21,7 @@ public:
     ~EventLoop();
 
     void loop();
+    void quit();
 
     void assertInLoopThread()
     {
