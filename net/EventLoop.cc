@@ -54,7 +54,7 @@ void EventLoop::loop()
         for(Channel* channel : activeChannels_)
         {
             curChannel_ = channel;
-            //todo
+            channel->handleEvent();
         }
         curChannel_ = nullptr;
         eventHandling_ = false;
@@ -68,4 +68,15 @@ void EventLoop::quit()
 {
     LOG_TRACE("EventLoop::quit() threadId_:%llu", threadId_);
     quit_ = true;
+}
+
+
+void EventLoop::updateChannel(Channel* channel)
+{
+    poller_->updateChannel(channel);
+}
+
+void EventLoop::removeChannel(Channel* channel)
+{
+    poller_->removeChannel(channel);
 }

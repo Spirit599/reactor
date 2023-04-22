@@ -23,6 +23,9 @@ public:
     void loop();
     void quit();
 
+    void updateChannel(Channel* channel);
+    void removeChannel(Channel* channel);
+
     void assertInLoopThread()
     {
         if(!isInLoopThread())
