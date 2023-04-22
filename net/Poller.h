@@ -10,7 +10,7 @@
 
 class Channel;
 
-class Poller : private noncopyable
+class Poller : public noncopyable
 {
 public:
     typedef std::vector<Channel*> ChannelList;

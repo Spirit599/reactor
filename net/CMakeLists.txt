@@ -6,6 +6,9 @@ set(net_SRCS
   EventLoop.cc
   Channel.cc
   poller/EpollPoller.cc
+  InetAddress.cc
+  SockerOps.cc
+  Socket.cc
 )
 
 add_library(net ${net_SRCS})
