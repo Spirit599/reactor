@@ -17,3 +17,6 @@ target_link_libraries(testEventLoopThread net)
 
 add_executable(testEventLoopThreadPool testEventLoopThreadPool.cc)
 target_link_libraries(testEventLoopThreadPool net)
+
+add_executable(testTcpServer testTcpServer.cc)
+target_link_libraries(testTcpServer net)
