@@ -66,3 +66,15 @@ void toIpPort(char* buf, size_t size, const struct sockaddr_in* addr)
     size_t end = strlen(buf);
     snprintf(buf + end, size - end, ":%u", be16toh(addr->sin_port));
 }
+
+struct sockaddr_in getLocalAddr(int fd)
+{
+    struct sockaddr_in addr;
+    memset(&addr, 0, sizeof(addr));
+    socklen_t addrLen = static_cast<socklen_t>(sizeof(addr));
+    if(::getsockname(fd, reinterpret_cast<sockaddr*>(&addr), &addrLen))
+    {
+        LOG_FATAL("getLocalAddr:%d", fd);
+    }
+    return addr;
+}

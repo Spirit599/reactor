@@ -17,3 +17,5 @@ void createAddrFromIpPort(const char* ip, uint16_t port, struct sockaddr_in* add
 void toIp(char* buf, size_t size, const struct sockaddr_in* addr);
 
 void toIpPort(char* buf, size_t size, const struct sockaddr_in* addr);
+
+struct sockaddr_in getLocalAddr(int fd);

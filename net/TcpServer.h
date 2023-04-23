@@ -5,6 +5,8 @@
 #include "net/EventLoopThreadPool.h"
 #include "net/Acceptor.h"
 
+#include <unordered_map>
+
 class TcpServer : public noncopyable
 {
 public:
@@ -14,6 +16,8 @@ public:
     void newConntion(int fd, const InetAddress& addr);
 
     void start();
+
+    void setThreadNum(int numThread);
     
 
 private:
@@ -27,4 +31,6 @@ private:
     bool started_;
 
     int nextConnId_;
+
+    std::unordered_map<string, TcpConnectionPtr> connections_;
 };

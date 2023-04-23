@@ -3,6 +3,7 @@
 
 #include <string>
 #include <functional>
+#include <memory>
 
 using std::string;
 
@@ -14,7 +15,7 @@ class InetAddress;
 typedef std::function<void(int fd, const InetAddress&)> NewConntionCallback;
 
 class TcpConnection;
-typedef TcpConnection* TcpConnectionPtr;
+typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
 typedef std::function<void(TcpConnectionPtr&)> ConnectionCallback;
 
 
