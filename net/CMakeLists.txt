@@ -7,8 +7,9 @@ set(net_SRCS
   Channel.cc
   poller/EpollPoller.cc
   InetAddress.cc
-  SockerOps.cc
+  SocketOps.cc
   Socket.cc
+  Acceptor.cc
 )
 
 add_library(net ${net_SRCS})

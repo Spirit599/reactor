@@ -16,6 +16,58 @@ public:
     void setStatus(int s) { status_ = s; }
     bool isNoneEvent() const { return events_ == kNoneEvent; }
 
+    void disableAll()
+    {   
+        events_ = kNoneEvent; 
+        update();
+    }
+
+    void enableReading()
+    {
+        events_ |= kReadEvent;
+        update();
+    }
+
+    void disableReading()
+    {
+        events_ &= ~kReadEvent;
+        update();
+    }
+
+    void enablewriting()
+    {
+        events_ |= kWriteEvent;
+        update();
+    }
+
+    void disablewriting()
+    {
+        events_ &= ~kWriteEvent;
+        update();
+    }
+
+    void setReadCallback(EventCallback cb)
+    {
+        readCallback_ = std::move(cb);
+    }
+
+    void setWriteCallback(EventCallback cb)
+    {
+        writeCallback_ = std::move(cb);
+    }
+
+    void setCloseCallback(EventCallback cb)
+    {
+        closeCallback_ = std::move(cb);
+    }
+
+    void setErrnoCallback(EventCallback cb)
+    {
+        errorCallback_ = std::move(cb);
+    }
+
+
+
     void remove();
     void handleEvent();
 

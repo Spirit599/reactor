@@ -1,5 +1,5 @@
 
-#include "net/SockerOps.h"
+#include "net/SocketOps.h"
 #include "base/Log.h"
 
 int createNonblockingOrDie(sa_family_t fa)
@@ -32,10 +32,7 @@ void listenOrDie(int fd)
 
 int acceptAndDeal(int fd, struct sockaddr_in* addr)
 {
-    socklen_t addrLen = static_cast<socklen_t>(sizeof(*addr));
-    socklen_t addrLen1 = static_cast<socklen_t>(sizeof(sockaddr_in));
-
-    LOG_TRACE("%d %d",addrLen, addrLen1);
+    socklen_t addrLen = static_cast<socklen_t>(sizeof(sockaddr_in));
 
     int connfd = ::accept4(fd, reinterpret_cast<struct sockaddr*>(addr), &addrLen, SOCK_NONBLOCK | SOCK_CLOEXEC);
 
@@ -56,4 +53,16 @@ void createAddrFromIpPort(const char* ip, uint16_t port, struct sockaddr_in* add
     {
         LOG_FATAL("createAddrFromIpPort");
     }
+}
+
+void toIp(char* buf, size_t size, const struct sockaddr_in* addr)
+{
+    ::inet_ntop(AF_INET, &addr->sin_addr, buf, static_cast<socklen_t>(size));
+}
+
+void toIpPort(char* buf, size_t size, const struct sockaddr_in* addr)
+{
+    toIp(buf, size, addr);
+    size_t end = strlen(buf);
+    snprintf(buf + end, size - end, ":%u", be16toh(addr->sin_port));
 }
