@@ -11,3 +11,9 @@ target_link_libraries(testSocketOps net)
 
 add_executable(testAcceptor testAcceptor.cc)
 target_link_libraries(testAcceptor net)
+
+add_executable(testEventLoopThread testEventLoopThread.cc)
+target_link_libraries(testEventLoopThread net)
+
+add_executable(testEventLoopThreadPool testEventLoopThreadPool.cc)
+target_link_libraries(testEventLoopThreadPool net)

@@ -10,6 +10,8 @@ set(net_SRCS
   SocketOps.cc
   Socket.cc
   Acceptor.cc
+  EventLoopThread.cc
+  EventLoopThreadPool.cc
 )
 
 add_library(net ${net_SRCS})
