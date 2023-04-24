@@ -15,6 +15,8 @@ public:
 
     void newConntion(int fd, const InetAddress& addr);
 
+    void removeConntion(const TcpConnectionPtr& conn);
+
     void start();
 
     void setThreadNum(int numThread);

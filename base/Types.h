@@ -16,7 +16,7 @@ typedef std::function<void(int fd, const InetAddress&)> NewConntionCallback;
 
 class TcpConnection;
 typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
-typedef std::function<void(TcpConnectionPtr&)> ConnectionCallback;
+typedef std::function<void(const TcpConnectionPtr&)> ConnectionCallback;
 
 
 using std::placeholders::_1;

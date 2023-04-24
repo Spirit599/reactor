@@ -39,8 +39,7 @@ void Acceptor::handleRead()
     int connfd = acceptSocket_.accept(peerAddr);
     if(connfd >= 0)
     {
-        LOG_TRACE("connfd:%d ip:%s", connfd, peerAddr.addrToIpAddr().c_str());
-        ::close(connfd);
+        newConntionCallback_(connfd, peerAddr);
     }
     else
     {

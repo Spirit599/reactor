@@ -17,6 +17,17 @@ TcpServer::~TcpServer()
 
 }
 
+void TcpServer::start()
+{
+    started_ = true;
+    threadsPool_.start();
+    acceptor_.startListen();
+}
+
+void TcpServer::setThreadNum(int numThread)
+{
+    threadsPool_.setThreadNum(numThread);
+}
 
 void TcpServer::newConntion(int connfd, const InetAddress& peerAddr)
 {
@@ -32,17 +43,12 @@ void TcpServer::newConntion(int connfd, const InetAddress& peerAddr)
                                             peerAddr));
     
     connections_[connName] = conn;
-
+    conn->connectionEstablished(); //todo
 }
 
-void TcpServer::start()
+void TcpServer::removeConntion(const TcpConnectionPtr& conn)
 {
-    started_ = true;
-    threadsPool_.start();
-    acceptor_.startListen();
+    connections_.erase(conn->name());
+    conn->connectionDestroyed(); ////todo
 }
 
-void TcpServer::setThreadNum(int numThread)
-{
-    threadsPool_.setThreadNum(numThread);
-}
