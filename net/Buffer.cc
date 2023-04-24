@@ -19,7 +19,7 @@ ssize_t Buffer::readFd(int fd, int* savedErrno)
     bufs[1].iov_len = sizeof(extraBuf);
 
     
-    const ssize_t n = readv(fd, bufs, iovcnt);
+    const ssize_t n = ::readv(fd, bufs, iovcnt);
     if(n < 0)
     {
         *savedErrno = errno;

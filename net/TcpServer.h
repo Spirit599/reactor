@@ -34,5 +34,8 @@ private:
 
     int nextConnId_;
 
+    ConnectionCallback connectionCallback_;
+    MessageCallback messageCallback_;
+
     std::unordered_map<string, TcpConnectionPtr> connections_;
 };
