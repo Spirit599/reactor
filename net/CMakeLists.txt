@@ -14,6 +14,7 @@ set(net_SRCS
   EventLoopThreadPool.cc
   TcpConnection.cc
   TcpServer.cc
+  Buffer.cc
 )
 
 add_library(net ${net_SRCS})
