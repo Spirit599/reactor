@@ -54,6 +54,8 @@ public:
     void handleWrite();
     void handleClose();
 
+    void sendMessage(const char* data, size_t len);
+
 private:
 
     enum StateE {

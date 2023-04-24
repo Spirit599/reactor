@@ -15,7 +15,9 @@ void defaultConnectionCallback(const TcpConnectionPtr& conn)
 
 void defaultMessageCallback(const TcpConnectionPtr& conn)
 {
-    LOG_TRACE("get message:%s", conn->inputBuffer().retrieveAllAsString().c_str());
+    string message(conn->inputBuffer().retrieveAllAsString());
+    LOG_TRACE("get message:%s", message.c_str());
+    conn->sendMessage(message.c_str(), message.size());
 }
 
 TcpConnection::TcpConnection(EventLoop* loop, const string& name, int fd,
@@ -66,6 +68,41 @@ void TcpConnection::connectionDestroyed()
 }
 
 
+void TcpConnection::sendMessage(const char* data, size_t len)
+{
+    ssize_t nwrote = 0;
+    size_t remaining = len;
+
+    //没在写 并且写缓冲区没数据 直接发到内核
+    if(!tcpConnectionChannel_.isWriting() && outputBuffer_.readableBytes() == 0)
+    {
+        nwrote = ::write(tcpConnectionChannel_.fd(), data, len);
+        if(nwrote >= 0)
+        {
+            remaining -= nwrote;
+            if(remaining == 0)
+            {
+                //todo
+                ;
+            }
+        }
+        else
+        {
+            nwrote = 0;
+            LOG_ERROR("TcpConnection::send()");
+        }
+    }
+
+    if(remaining > 0)
+    {
+        outputBuffer_.append(static_cast<const char*>(data) + nwrote, remaining);
+        if(!tcpConnectionChannel_.isWriting())
+        {
+            tcpConnectionChannel_.enablewriting();
+        }
+    }
+}
+
 void TcpConnection::handleRead()
 {
     int savedErrno = 0;
@@ -100,5 +137,17 @@ void TcpConnection::handleClose()
 
 void TcpConnection::handleWrite()
 {
-    
+    if(tcpConnectionChannel_.isWriting())
+    {
+        ssize_t n = ::write(tcpConnectionChannel_.fd(), outputBuffer_.peek(), outputBuffer_.readableBytes());
+        if(n > 0)
+        {
+            outputBuffer_.retrieve(n);
+            if(outputBuffer_.readableBytes() == 0)
+            {
+                tcpConnectionChannel_.disablewriting();
+                //todo
+            }
+        }
+    }
 }

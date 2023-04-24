@@ -34,6 +34,9 @@ public:
         update();
     }
 
+    bool isReading() const
+    { return events_ & kReadEvent; }
+
     void enablewriting()
     {
         events_ |= kWriteEvent;
@@ -45,6 +48,9 @@ public:
         events_ &= ~kWriteEvent;
         update();
     }
+
+    bool isWriting() const
+    { return events_ & kWriteEvent; }
 
     void setReadCallback(EventCallback cb)
     {
