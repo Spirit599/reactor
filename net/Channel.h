@@ -2,7 +2,7 @@
 
 #include "net/EventLoop.h"
 
-class Channel
+class Channel : public noncopyable
 {
 public:
 

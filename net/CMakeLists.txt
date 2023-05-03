@@ -15,6 +15,8 @@ set(net_SRCS
   TcpConnection.cc
   TcpServer.cc
   Buffer.cc
+  Timer.cc
+  TimerQueue.cc
 )
 
 add_library(net ${net_SRCS})

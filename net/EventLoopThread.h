@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base/noncpoyable.h"
+#include "base/noncopyable.h"
 #include "base/Types.h"
 
 #include <thread>

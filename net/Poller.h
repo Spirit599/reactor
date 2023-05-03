@@ -6,7 +6,7 @@
 
 #include "base/Timestamp.h"
 #include "net/EventLoop.h"
-#include "base/noncpoyable.h"
+#include "base/noncopyable.h"
 
 class Channel;
 

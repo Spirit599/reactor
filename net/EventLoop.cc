@@ -2,7 +2,7 @@
 #include "net/EventLoop.h"
 #include "net/poller/PollerFactory.h"
 #include "net/Channel.h"
-
+#include "net/TimerQueue.h"
 
 __thread EventLoop* t_LoopInThisThread = nullptr;
 const int kPollTimeMs = 10000;
@@ -16,6 +16,7 @@ EventLoop::EventLoop()
     callingPendingFunctors_(false),
     pollerFactory_(new EpollPollerFactory()),
     poller_(pollerFactory_->CreatePoller(this)),
+    timerQueue_(new TimerQueue(this)),
     curChannel_(nullptr)
 {
     LOG_DEBUG("create threadId_:%llu", threadId_);
@@ -79,4 +80,34 @@ void EventLoop::updateChannel(Channel* channel)
 void EventLoop::removeChannel(Channel* channel)
 {
     poller_->removeChannel(channel);
+}
+
+void EventLoop::runInLoop(Functor cb)
+{
+    if(isInLoopThread())
+    {
+        cb();
+    }
+}
+
+TimerId EventLoop::runAt(Timestamp time, TimerCallback cb)
+{
+    return timerQueue_->addTimer(std::move(cb), time, 0.0);
+}
+
+TimerId EventLoop::runAfter(double delay, TimerCallback cb)
+{
+    Timestamp time(addTime(Timestamp::now(), delay));
+    return runAt(time, std::move(cb));
+}
+
+TimerId EventLoop::runEvery(double interval, TimerCallback cb)
+{
+    Timestamp time(addTime(Timestamp::now(), interval));
+    return timerQueue_->addTimer(std::move(cb), time, interval);
+}
+
+void EventLoop::cancel(TimerId timerId)
+{
+    return timerQueue_->cancel(timerId);
 }

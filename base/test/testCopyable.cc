@@ -1,5 +1,5 @@
 
-#include "base/noncpoyable.h"
+#include "base/noncopyable.h"
 #include "base/copyable.h"
 
 #include <iostream>

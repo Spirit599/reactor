@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base/noncpoyable.h"
+#include "base/noncopyable.h"
 #include "net/EventLoop.h"
 #include "net/InetAddress.h"
 #include "net/Socket.h"

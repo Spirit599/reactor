@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base/noncpoyable.h"
+#include "base/noncopyable.h"
 #include "EventLoop.h"
 #include "EventLoopThread.h"
 

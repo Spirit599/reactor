@@ -23,3 +23,6 @@ typedef std::function<void(const TcpConnectionPtr&)> CloseCallback;
 
 using std::placeholders::_1;
 using std::placeholders::_2;
+
+
+typedef std::function<void()> TimerCallback;
