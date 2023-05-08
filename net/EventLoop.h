@@ -29,6 +29,10 @@ public:
     void updateChannel(Channel* channel);
     void removeChannel(Channel* channel);
 
+    void wakeup();
+    void handleRead();
+    void doPendingFunctors();
+
     void assertInLoopThread()
     {
         if(!isInLoopThread())
@@ -76,4 +80,7 @@ private:
     
     typedef std::vector<Functor> FunctorList;
     FunctorList pengdingFunctors_;
+
+    int wakeupFd_;
+    std::unique_ptr<Channel> wakeupChannel_;
 };

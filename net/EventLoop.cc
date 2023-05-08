@@ -4,8 +4,21 @@
 #include "net/Channel.h"
 #include "net/TimerQueue.h"
 
+#include "sys/eventfd.h"
+
 __thread EventLoop* t_LoopInThisThread = nullptr;
 const int kPollTimeMs = 10000;
+
+int createEventfd()
+{
+    int evfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
+    if(evfd < 0)
+    {
+        LOG_FATAL("createEventfd");
+    }
+    return evfd;
+}
+
 
 EventLoop::EventLoop()
     :
@@ -17,7 +30,9 @@ EventLoop::EventLoop()
     pollerFactory_(new EpollPollerFactory()),
     poller_(pollerFactory_->CreatePoller(this)),
     timerQueue_(new TimerQueue(this)),
-    curChannel_(nullptr)
+    curChannel_(nullptr),
+    wakeupFd_(createEventfd()),
+    wakeupChannel_(new Channel(this, wakeupFd_))
 {
     LOG_DEBUG("create threadId_:%llu", threadId_);
     if(t_LoopInThisThread)
@@ -28,6 +43,8 @@ EventLoop::EventLoop()
     {
         t_LoopInThisThread = this;
     }
+    wakeupChannel_->setReadCallback(std::bind(&EventLoop::handleRead, this));
+    wakeupChannel_->enableReading();
 }
 
 EventLoop::~EventLoop()
@@ -59,6 +76,7 @@ void EventLoop::loop()
         }
         curChannel_ = nullptr;
         eventHandling_ = false;
+        doPendingFunctors();
     }
 
     LOG_TRACE("eventloop threadId_:%llu end loop", threadId_);
@@ -82,11 +100,48 @@ void EventLoop::removeChannel(Channel* channel)
     poller_->removeChannel(channel);
 }
 
+void EventLoop::wakeup()
+{
+    uint64_t one = 1;
+    ssize_t n = ::write(wakeupFd_, &one, sizeof(one));
+}
+
+void EventLoop::handleRead()
+{
+    uint64_t one = 1;
+    ssize_t n = ::read(wakeupFd_, &one, sizeof(one));
+}
+
+void EventLoop::doPendingFunctors()
+{
+    std::vector<Functor> funs;
+    callingPendingFunctors_ = true;
+
+    {
+        std::unique_lock<std::mutex> lockGurad(mutex_);
+        funs.swap(pengdingFunctors_);
+    }
+
+    for(const Functor& f : funs)
+    {
+        f();
+    }
+    callingPendingFunctors_ = false;
+}
+
 void EventLoop::runInLoop(Functor cb)
 {
     if(isInLoopThread())
     {
         cb();
+    }
+    else
+    {
+        {
+            std::unique_lock<std::mutex> lockGurad(mutex_);
+            pengdingFunctors_.emplace_back(std::move(cb));
+        }
+        wakeup();
     }
 }
 
