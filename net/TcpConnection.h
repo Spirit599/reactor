@@ -55,6 +55,7 @@ public:
     void handleClose();
 
     void sendMessage(const char* data, size_t len);
+    void sendMessage(Buffer* buf);
 
 private:
 

@@ -67,6 +67,14 @@ void TcpConnection::connectionDestroyed()
     tcpConnectionChannel_.remove();
 }
 
+void TcpConnection::sendMessage(Buffer* buf)
+{
+    if(loop_->isInLoopThread())
+    {
+        sendMessage(buf->peek(), buf->readableBytes());
+        buf->retrieveAll();
+    }
+}
 
 void TcpConnection::sendMessage(const char* data, size_t len)
 {

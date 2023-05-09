@@ -115,6 +115,33 @@ public:
         hasWritten(len);
     }
 
+    void append(const void* data, size_t len)
+    {
+        append(static_cast<const char*>(data), len);
+    }
+
+    void appendInt32(int32_t x)
+    {
+        int32_t be32 = htobe32(x);
+        append(&be32, sizeof(be32));
+    }
+
+    void fillPrepend(const void* data, size_t len)
+    {
+        assert(len <= prepengableBytes());
+        readIdx_ -= len;
+        const char* d = static_cast<const char*>(data);
+        std::copy(d, d + len, begin() + readIdx_);
+    }
+
+    int32_t peekInt32() const
+    {
+        assert(readableBytes() >= sizeof(int32_t));
+        int32_t be32 = 0;
+        memcpy(&be32, peek(), sizeof(be32));
+        return be32toh(be32);
+    }
+
 
     ssize_t readFd(int fd, int* savedErrno);
 
