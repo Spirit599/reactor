@@ -83,3 +83,46 @@ private:
     ErrorCallback errorCallback_;
     const int kMinMessageLen;
 };
+
+template<typename MSG, const char* TAG>
+class ProtobufCodecT
+{
+public:
+    typedef std::shared_ptr<MSG> ConcreteMessagePtr;
+
+    typedef std::function<void(const TcpConnectionPtr&, const ConcreteMessagePtr&, Timestamp)> ProtobufMessageCallback;
+    
+    typedef ProtobufCodec::RawMessageCallback RawMessageCallback;
+    typedef ProtobufCodec::ErrorCallback ErrorCallback;
+
+    explicit ProtobufCodecT(const ProtobufMessageCallback& messageCallback,
+                            const RawMessageCallback& rawCb = RawMessageCallback(),
+                            const ErrorCallback& errorCb = ProtobufCodec::defaultErrorCallback)
+        :
+        messageCallback_(messageCallback),
+        codec_(&MSG::default_instance(),
+                TAG,
+                std::bind(&ProtobufCodecT::onRpcMessage, this, _1, _2, _3),
+                rawCb,
+                errorCb)
+    {}
+
+    const string& tag() const
+    { return codec_.tag(); }
+
+    void send(const TcpConnectionPtr& conn, const MSG& message)
+    { codec_.send(conn, message); }
+
+    void onMessage(const TcpConnectionPtr& conn, Buffer* buf, Timestamp receiveTime)
+    { codec_.onMessage(conn, buf, receiveTime); }
+
+    void onRpcMessage(const TcpConnectionPtr& conn, const MessagePtr& message, Timestamp receiveTime)
+    { messageCallback_(conn, std::static_pointer_cast<MSG>(message), receiveTime); }
+
+    void fillEmptyBuffer(Buffer* buf, const MSG& message)
+    { codec_.fillEmptyBuffer(buf, message); }
+
+private:
+    ProtobufMessageCallback messageCallback_;
+    ProtobufCodec codec_;
+};

@@ -52,7 +52,7 @@ public:
     bool isWriting() const
     { return events_ & kWriteEvent; }
 
-    void setReadCallback(EventCallback cb)
+    void setReadCallback(ReadEventCallback cb)
     {
         readCallback_ = std::move(cb);
     }
@@ -75,7 +75,7 @@ public:
 
 
     void remove();
-    void handleEvent();
+    void handleEvent(Timestamp);
 
 private:
 
@@ -91,7 +91,7 @@ private:
     bool addedToLoop;
     bool eventHandling_;
 
-    EventCallback readCallback_;
+    ReadEventCallback readCallback_;
     EventCallback writeCallback_;
     EventCallback closeCallback_;
     EventCallback errorCallback_;

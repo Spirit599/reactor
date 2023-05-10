@@ -23,4 +23,5 @@ add_library(net ${net_SRCS})
 target_link_libraries(net base)
 
 add_subdirectory(protobuf)
+add_subdirectory(protorpc)
 add_subdirectory(test)

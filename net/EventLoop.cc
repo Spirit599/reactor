@@ -72,7 +72,7 @@ void EventLoop::loop()
         for(Channel* channel : activeChannels_)
         {
             curChannel_ = channel;
-            channel->handleEvent();
+            channel->handleEvent(pollReturnTime_);
         }
         curChannel_ = nullptr;
         eventHandling_ = false;

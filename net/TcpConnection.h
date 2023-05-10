@@ -50,7 +50,7 @@ public:
 
     void connectionDestroyed();
 
-    void handleRead();
+    void handleRead(Timestamp);
     void handleWrite();
     void handleClose();
 

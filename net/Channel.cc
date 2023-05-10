@@ -35,7 +35,7 @@ void Channel::remove()
     loop_->removeChannel(this);
 }
 
-void Channel::handleEvent()
+void Channel::handleEvent(Timestamp time)
 {
     eventHandling_ = true;
 
@@ -54,7 +54,7 @@ void Channel::handleEvent()
     if(revents_ & (POLLIN | POLLPRI | POLLRDHUP))
     {
         if(readCallback_)
-            readCallback_();
+            readCallback_(time);
     }
 
     if(revents_ & (POLLOUT))

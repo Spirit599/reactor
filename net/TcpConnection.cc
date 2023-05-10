@@ -13,7 +13,7 @@ void defaultConnectionCallback(const TcpConnectionPtr& conn)
     }
 }
 
-void defaultMessageCallback(const TcpConnectionPtr& conn)
+void defaultMessageCallback(const TcpConnectionPtr& conn, Buffer* buf, Timestamp)
 {
     string message(conn->inputBuffer().retrieveAllAsString());
     LOG_TRACE("get message:%s", message.c_str());
@@ -34,7 +34,7 @@ TcpConnection::TcpConnection(EventLoop* loop, const string& name, int fd,
     connectionCallback_(defaultConnectionCallback),
     messageCallback_(defaultMessageCallback)
 {
-    tcpConnectionChannel_.setReadCallback(std::bind(&TcpConnection::handleRead, this));
+    tcpConnectionChannel_.setReadCallback(std::bind(&TcpConnection::handleRead, this, _1));
     tcpConnectionChannel_.setWriteCallback(std::bind(&TcpConnection::handleWrite, this));
     tcpConnectionChannel_.setCloseCallback(std::bind(&TcpConnection::handleClose, this));
     
@@ -111,13 +111,13 @@ void TcpConnection::sendMessage(const char* data, size_t len)
     }
 }
 
-void TcpConnection::handleRead()
+void TcpConnection::handleRead(Timestamp receiveTime)
 {
     int savedErrno = 0;
     ssize_t n = inputBuffer_.readFd(tcpConnectionSocket_.fd(), &savedErrno);
     if(n > 0)
     {
-        messageCallback_(shared_from_this());
+        messageCallback_(shared_from_this(), &inputBuffer_, receiveTime);
     }
     else if(n == 0)
     {
