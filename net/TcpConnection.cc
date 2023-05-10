@@ -30,9 +30,7 @@ TcpConnection::TcpConnection(EventLoop* loop, const string& name, int fd,
     tcpConnectionChannel_(loop, fd),
     localAddr_(localAddr),
     peerAddr_(peerAddr),
-    state_(KConnecting),
-    connectionCallback_(defaultConnectionCallback),
-    messageCallback_(defaultMessageCallback)
+    state_(KConnecting)
 {
     tcpConnectionChannel_.setReadCallback(std::bind(&TcpConnection::handleRead, this, _1));
     tcpConnectionChannel_.setWriteCallback(std::bind(&TcpConnection::handleWrite, this));

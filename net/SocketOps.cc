@@ -45,6 +45,11 @@ int acceptAndDeal(int fd, struct sockaddr_in* addr)
     return connfd;
 }
 
+int doConnection(int fd, const struct sockaddr* addr)
+{
+    return ::connect(fd, addr, static_cast<socklen_t>(sizeof(struct sockaddr_in)));
+}
+
 void createAddrFromIpPort(const char* ip, uint16_t port, struct sockaddr_in* addr)
 {
     addr->sin_family = AF_INET;

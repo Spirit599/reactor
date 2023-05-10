@@ -19,13 +19,13 @@ public:
     bool isListening()
     { return listening_; }
 
-    void setNewConntionCallback(const NewConntionCallback& cb)
-    { newConntionCallback_ = cb; }
+    void setNewConnectionCallback(const NewConnectionCallback& cb)
+    { newConnectionCallback_ = cb; }
 
 private:
     void handleRead();
 
-    NewConntionCallback newConntionCallback_;
+    NewConnectionCallback newConnectionCallback_;
 
     EventLoop* loop_;
     Socket acceptSocket_;

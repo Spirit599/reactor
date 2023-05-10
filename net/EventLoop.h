@@ -47,6 +47,7 @@ public:
     }
 
     void runInLoop(Functor cb);
+    void queueInLoop(Functor cb);
 
     TimerId runAt(Timestamp time, TimerCallback cb);
     TimerId runAfter(double delay, TimerCallback cb);

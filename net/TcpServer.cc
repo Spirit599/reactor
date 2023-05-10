@@ -7,9 +7,11 @@ TcpServer::TcpServer(EventLoop* loop, const InetAddress& listenAddr, const strin
     name_(name),
     ipPort_(listenAddr.addrToIpAddr()),
     acceptor_(loop, listenAddr),
-    threadsPool_(loop, name)
+    threadsPool_(loop, name),
+    connectionCallback_(defaultConnectionCallback),
+    messageCallback_(defaultMessageCallback)
 {
-    acceptor_.setNewConntionCallback(std::bind(&TcpServer::newConntion, this, _1, _2));
+    acceptor_.setNewConnectionCallback(std::bind(&TcpServer::newConntion, this, _1, _2));
 }
 
 TcpServer::~TcpServer()
@@ -44,6 +46,8 @@ void TcpServer::newConntion(int connfd, const InetAddress& peerAddr)
     
     connections_[connName] = conn;
 
+    conn->setConnectionCallback(connectionCallback_);
+    conn->setMessageCallback(messageCallback_);
     conn->setCloseCallback(std::bind(&TcpServer::removeConntion, this, _1));
 
     conn->connectionEstablished(); //todo

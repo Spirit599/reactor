@@ -145,6 +145,16 @@ void EventLoop::runInLoop(Functor cb)
     }
 }
 
+void EventLoop::queueInLoop(Functor cb)
+{
+    {
+        std::unique_lock<std::mutex> lockGurad(mutex_);
+        pengdingFunctors_.emplace_back(std::move(cb));
+    }
+    if(!isInLoopThread() || callingPendingFunctors_)
+        wakeup();
+}
+
 TimerId EventLoop::runAt(Timestamp time, TimerCallback cb)
 {
     return timerQueue_->addTimer(std::move(cb), time, 0.0);

@@ -14,7 +14,7 @@ typedef std::function<void()> EventCallback;
 
 
 class InetAddress;
-typedef std::function<void(int fd, const InetAddress&)> NewConntionCallback;
+typedef std::function<void(int fd, const InetAddress&)> NewConnectionCallback;
 
 class Buffer;
 class TcpConnection;
@@ -31,3 +31,6 @@ using std::placeholders::_3;
 
 
 typedef std::function<void()> TimerCallback;
+
+void defaultConnectionCallback(const TcpConnectionPtr& conn);
+void defaultMessageCallback(const TcpConnectionPtr& conn, Buffer* buf, Timestamp);
