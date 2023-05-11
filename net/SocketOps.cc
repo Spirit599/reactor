@@ -77,9 +77,21 @@ struct sockaddr_in getLocalAddr(int fd)
     struct sockaddr_in addr;
     memset(&addr, 0, sizeof(addr));
     socklen_t addrLen = static_cast<socklen_t>(sizeof(addr));
-    if(::getsockname(fd, reinterpret_cast<sockaddr*>(&addr), &addrLen))
+    if(::getsockname(fd, reinterpret_cast<sockaddr*>(&addr), &addrLen) < 0)
     {
         LOG_FATAL("getLocalAddr:%d", fd);
+    }
+    return addr;
+}
+
+struct sockaddr_in getPeerAddr(int fd)
+{
+    struct sockaddr_in addr;
+    memset(&addr, 0, sizeof(addr));
+    socklen_t addrLen = static_cast<socklen_t>(sizeof(addr));
+    if(::getpeername(fd, reinterpret_cast<sockaddr*>(&addr), &addrLen) < 0)
+    {
+        LOG_FATAL("getPeerAddr:%d", fd);
     }
     return addr;
 }
