@@ -26,3 +26,6 @@ target_link_libraries(testTimer net)
 
 add_executable(testTimerQueue testTimerQueue.cc)
 target_link_libraries(testTimerQueue net)
+
+add_executable(testTcpClient testTcpClient.cc)
+target_link_libraries(testTcpClient net)

@@ -6,8 +6,8 @@ add_custom_command(OUTPUT rpc.pb.cc rpc.pb.h
 
 include_directories(${PROJECT_BINARY_DIR})
 
-message("PROJECT_BINARY_DIR" ${PROJECT_BINARY_DIR})
 
 add_library(protorpc rpc.pb.cc RpcCodec.cc RpcChannel.cc RpcServer.cc)
 target_link_libraries(protorpc protobufCodec)
 
+add_subdirectory(test)

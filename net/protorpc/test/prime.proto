@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+option cc_generic_services = true;
+
+message PrimeRequest {
+    required fixed64 num = 1;
+}
+
+message PrimeResponse {
+    optional bool isPrime = 1 [default = false];
+}
+
+service PrimeService {
+    rpc Solve (PrimeRequest) returns (PrimeResponse);
+}
