@@ -75,7 +75,7 @@ void TcpClient::disconnect()
         if(connection_)
         {
             //shutdown?
-            connection_->handleClose();
+            connection_->shutdown();
         }
     }
 }
@@ -95,9 +95,14 @@ void TcpClient::newConnection(int fd)
 
     string name = name_ + buf;
 
+    LOG_INFO("newConnection %s", name.c_str());
+
     InetAddress localAddr(getLocalAddr(fd));
 
     TcpConnectionPtr conn(new TcpConnection(loop_, name, fd, localAddr, peerAddr));
+    
+    
+
     conn->setConnectionCallback(connectionCallback_);
     conn->setMessageCallback(messageCallback_);
     conn->setCloseCallback(std::bind(&TcpClient::removeConnection, this, _1));
@@ -114,6 +119,7 @@ void TcpClient::removeConnection(const TcpConnectionPtr& conn)
     {
         std::unique_lock<std::mutex> ulk(mutex_);
         connection_.reset();
+        LOG_INFO("connection_.reset();");
     }
     loop_->queueInLoop(std::bind(&TcpConnection::connectionDestroyed, conn));
 }

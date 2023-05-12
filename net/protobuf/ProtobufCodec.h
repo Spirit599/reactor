@@ -16,7 +16,6 @@ namespace google
 
 typedef std::shared_ptr<google::protobuf::Message> MessagePtr;
 
-
 class ProtobufCodec : public noncopyable
 {
 public:
@@ -84,27 +83,27 @@ private:
     const int kMinMessageLen;
 };
 
-template<typename MSG, const char* TAG>
+
+
+template<typename MSG, const char* TAG, typename CODEC = ProtobufCodec>
 class ProtobufCodecT
 {
 public:
     typedef std::shared_ptr<MSG> ConcreteMessagePtr;
 
-    typedef std::function<void(const TcpConnectionPtr&, const ConcreteMessagePtr&, Timestamp)> ProtobufMessageCallback;
+    typedef std::function<void(const TcpConnectionPtr&, const ConcreteMessagePtr&, Timestamp)> ProtobufMessageCallback1;
     
     typedef ProtobufCodec::RawMessageCallback RawMessageCallback;
     typedef ProtobufCodec::ErrorCallback ErrorCallback;
 
-    explicit ProtobufCodecT(const ProtobufMessageCallback& messageCallback,
+    explicit ProtobufCodecT(const ProtobufMessageCallback1& messageCallback,
                             const RawMessageCallback& rawCb = RawMessageCallback(),
                             const ErrorCallback& errorCb = ProtobufCodec::defaultErrorCallback)
         :
         messageCallback_(messageCallback),
         codec_(&MSG::default_instance(),
                 TAG,
-                std::bind(&ProtobufCodecT::onRpcMessage, this, _1, _2, _3),
-                rawCb,
-                errorCb)
+                std::bind(&ProtobufCodecT::onRpcMessage, this, _1, _2, _3))
     {}
 
     const string& tag() const
@@ -117,12 +116,14 @@ public:
     { codec_.onMessage(conn, buf, receiveTime); }
 
     void onRpcMessage(const TcpConnectionPtr& conn, const MessagePtr& message, Timestamp receiveTime)
-    { messageCallback_(conn, std::static_pointer_cast<MSG>(message), receiveTime); }
+    { 
+        messageCallback_(conn, std::static_pointer_cast<MSG>(message), receiveTime); 
+    }
 
     void fillEmptyBuffer(Buffer* buf, const MSG& message)
     { codec_.fillEmptyBuffer(buf, message); }
 
 private:
-    ProtobufMessageCallback messageCallback_;
-    ProtobufCodec codec_;
+    ProtobufMessageCallback1 messageCallback_;
+    CODEC codec_;
 };

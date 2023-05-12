@@ -7,6 +7,8 @@
 #include "net/Channel.h"
 #include "net/Buffer.h"
 
+#include <any>
+
 class TcpConnection : public noncopyable,
                       public std::enable_shared_from_this<TcpConnection>
 {
@@ -57,6 +59,12 @@ public:
     void sendMessage(const char* data, size_t len);
     void sendMessage(Buffer* buf);
 
+    void setContext(const std::any& context)
+    { context_ = context; }
+
+    void shutdown()
+    { tcpConnectionSocket_.shutdown(); }
+
 private:
 
     enum StateE {
@@ -86,4 +94,6 @@ private:
     ConnectionCallback connectionCallback_;
     MessageCallback messageCallback_;
     CloseCallback closeCallback_;
+
+    std::any context_;
 };

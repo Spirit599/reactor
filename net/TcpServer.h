@@ -20,6 +20,12 @@ public:
     void start();
 
     void setThreadNum(int numThread);
+
+    void setConnectionCallback(const ConnectionCallback& cb)
+    { connectionCallback_ = cb; }
+
+    void setMessageCallback(const MessageCallback& cb)
+    { messageCallback_ = cb; }
     
 
 private:

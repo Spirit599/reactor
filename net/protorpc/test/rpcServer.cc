@@ -13,16 +13,28 @@ public:
                         google::protobuf::Closure* done)
     {
         LOG_INFO("PrimeServiceImpl::Solve");
-        resp->set_isprime(true);
+        resp->set_isprime(checkPrime(req->num()));
         done->Run();
     }
+
+    bool checkPrime(int num)
+    {
+        for(int i = 2; i * i <= num; ++i)
+        {
+            if(num % i == 0)
+                return false;
+        }
+        return true;
+    }
+
+    
 };
 
 int main(int argc, char const *argv[])
 {
     
     EventLoop loop;
-    InetAddress listenAddr(8888);
+    InetAddress listenAddr(10013);
     PrimeServiceImpl impl;
 
     RpcServer rpcServer(&loop, listenAddr);

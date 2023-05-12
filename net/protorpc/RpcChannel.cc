@@ -60,11 +60,14 @@ void RpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
 
 void RpcChannel::onMessage(const TcpConnectionPtr& conn, Buffer* buf, Timestamp receiveTime)
 {
+    LOG_INFO("RpcChannel::onMessage");
     codec_.onMessage(conn, buf, receiveTime);
 }
 
 void RpcChannel::onRpcMessage(const TcpConnectionPtr& conn, const RpcMessagePtr& messagePtr, Timestamp receiveTime)
 {
+
+    LOG_INFO("RpcChannel::onRpcMessage");
     assert(conn == conn_);
 
     RpcMessage& message = *messagePtr;

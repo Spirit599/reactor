@@ -2,7 +2,6 @@
 
 #include "base/Log.h"
 #include "net/TcpConnection.h"
-#include "net/protobuf/google-inl.h"
 
 #include <google/protobuf/message.h>
 #include <zlib.h>
@@ -38,6 +37,7 @@ void ProtobufCodec::fillEmptyBuffer(Buffer* buf, const google::protobuf::Message
 
 void ProtobufCodec::onMessage(const TcpConnectionPtr& conn, Buffer* buf, Timestamp receiveTime)
 {
+    LOG_INFO("ProtobufCodec::onMessage");
     while(buf->readableBytes() >= static_cast<uint32_t>(kMinMessageLen + kHeaderLen))
     {
         const int32_t len = buf->peekInt32();
@@ -58,8 +58,11 @@ void ProtobufCodec::onMessage(const TcpConnectionPtr& conn, Buffer* buf, Timesta
             ErrorCode errorCode = parse(buf->peek() + kHeaderLen, len, messagePtr.get());
             if(errorCode == kNoError)
             {
-                MessageCallback_(conn, messagePtr, receiveTime);
-                buf->retrieve(kHeaderLen + len);
+                if(MessageCallback_)
+                {
+                    MessageCallback_(conn, messagePtr, receiveTime);
+                    buf->retrieve(kHeaderLen + len);
+                }
             }
             else
             {
@@ -81,18 +84,12 @@ bool ProtobufCodec::parseFromBuffer(const char* data, int len, google::protobuf:
 
 int ProtobufCodec::serializeToBuffer(const google::protobuf::Message& message, Buffer* buf)
 {
-    GOOGLE_CHECK(message.IsInitialized()) << InitializationErrorMessage("serialize", message);
-
     int byteSize = message.ByteSize();
     buf->checkSpace(byteSize + kChecksumLen);
 
     uint8_t* start = reinterpret_cast<uint8_t*>(buf->last());
     uint8_t* end = message.SerializeWithCachedSizesToArray(start);
 
-    if(end - start != byteSize)
-    {
-        ByteSizeConsistencyError(byteSize, message.ByteSize(), static_cast<int>(end - start));
-    }
     buf->hasWritten(byteSize);
     return byteSize;
 }
@@ -188,4 +185,3 @@ ProtobufCodec::ErrorCode ProtobufCodec::parse(const char* buf, int len, google::
     }
     return errorCode;
 }
-

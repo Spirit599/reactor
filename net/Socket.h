@@ -26,6 +26,9 @@ public:
 
     void setKeepAlive(bool on);
 
+    void shutdown()
+    { ::shutdown(fd_, SHUT_WR); }
+
 private:
     const int fd_;
 };

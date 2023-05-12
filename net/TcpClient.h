@@ -1,6 +1,7 @@
 #pragma once
 
 #include "net/TcpConnection.h"
+#include "base/Types.h"
 
 
 class Connector;

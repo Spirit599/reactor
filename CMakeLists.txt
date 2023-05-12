@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(CXX_FLAGS
  -g
+ -ggdb
  -Wall
  -Wextra
  -Werror

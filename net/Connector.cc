@@ -29,7 +29,6 @@ void Connector::startInLoop()
     assert(state_ == KDisconnected);
     if(connect_)
     {
-        LOG_INFO("44444444444444444444444");
         connect();
     }
     else
@@ -57,17 +56,14 @@ void Connector::connect()
     int fd = createNonblockingOrDie(serverAddr_.family());
     int ret = doConnection(fd, serverAddr_.getSockAddr());
 
-    LOG_INFO("connect() %s", serverAddr_.addrToIpAddr().c_str());
+    int savedErrno = (ret == 0) ? 0 : errno;
+    LOG_INFO("connect() %s %d", serverAddr_.addrToIpAddr().c_str(), savedErrno);
 
-    if(ret == 0)
+    if(savedErrno == 0 || savedErrno == EINPROGRESS)
     {
-        LOG_INFO("55555555555555555555");
         connecting(fd);
     }
-    else
-    {
-        LOG_ERROR("connect() %d", ret);
-    }
+    
 }
 
 void Connector::connecting(int fd)
@@ -102,7 +98,6 @@ void Connector::handleWrite()
         setState(KConnected);
         if(connect_)
         {
-            LOG_INFO("333333333333333333");
             newConnectionCallback_(fd);
         }
         else

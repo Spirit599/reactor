@@ -30,26 +30,26 @@ private:
 
     void onConnection(const TcpConnectionPtr& conn)
     {
+        LOG_INFO("onConnection(const TcpConnectionPtr& conn)");
         if(conn->connected())
         {
-            LOG_INFO("111111111111111111");
             channel_->setConnection(conn);
             PrimeRequest req;
-            req.set_num(5);
+            int num = rand() % 64 + 2;
+            req.set_num(num);
             PrimeResponse* resp = new PrimeResponse();
 
-            stub_.Solve(NULL, &req, resp, NewCallback(this, &RpcClient::solved, resp));
+            stub_.Solve(NULL, &req, resp, NewCallback(this, &RpcClient::solved, resp, num));
         }
         else
         {
-            LOG_INFO("22222222222222222");
             loop_->quit();
         }
     }
 
-    void solved(PrimeResponse* resp)
+    void solved(PrimeResponse* resp, int num)
     {
-        LOG_INFO("solved\n%s", resp->DebugString().c_str());
+        LOG_INFO("solved\n%d %s", num, resp->DebugString().c_str());
         client_.disconnect();
     }
 
@@ -61,8 +61,9 @@ private:
 
 int main(int argc, char const *argv[])
 {
+    srand(time(0));
     EventLoop loop;
-    InetAddress serverAddr("127.0.0.1", 8888);
+    InetAddress serverAddr("127.0.0.1", 10013);
 
     RpcClient rpcClient(&loop, serverAddr);
     rpcClient.connect();

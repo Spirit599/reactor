@@ -9,7 +9,9 @@
 RpcServer::RpcServer(EventLoop* loop, const InetAddress& listenAddr)
     :
     server_(loop, listenAddr, "RpcServer")
-{}
+{
+    server_.setConnectionCallback(std::bind(&RpcServer::onConnection, this, _1));
+}
 
 void RpcServer::registerService(google::protobuf::Service* service)
 {
@@ -21,13 +23,16 @@ void RpcServer::onConnection(const TcpConnectionPtr& conn)
 {
     if(conn->connected())
     {
-        LOG_TRACE("%s->%s is UP", conn->localAddr().addrToIpAddr().c_str(), conn->peerAddr().addrToIpAddr().c_str());
+        LOG_TRACE("rpc %s->%s is UP", conn->localAddr().addrToIpAddr().c_str(), conn->peerAddr().addrToIpAddr().c_str());
         RpcChannelPtr channel(new RpcChannel(conn));
         channel->setServices(&services_);
         conn->setMessageCallback(std::bind(&RpcChannel::onMessage, channel.get(), _1, _2, _3));
+        conn->setContext(channel);
+
     }
     else
     {
-        LOG_TRACE("%s->%s is DOWN", conn->localAddr().addrToIpAddr().c_str(), conn->peerAddr().addrToIpAddr().c_str());
+        conn->setContext(RpcChannelPtr());
+        LOG_TRACE("rpc %s->%s is DOWN", conn->localAddr().addrToIpAddr().c_str(), conn->peerAddr().addrToIpAddr().c_str());
     }
 }
