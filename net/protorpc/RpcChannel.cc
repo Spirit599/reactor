@@ -49,6 +49,8 @@ void RpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
     message.set_method(method->name());
     message.set_request(req->SerializeAsString());
 
+    LOG_INFO("CallMethod()");
+
     OutstandingCall out = { response, done };
     
     mutex_.lock();
