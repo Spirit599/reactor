@@ -6,6 +6,7 @@ int main(int argc, char const *argv[])
 
     InetAddress addr(8888);
     TcpServer tcpServer(&loop, addr, "tcp");
+    tcpServer.setThreadNum(4);
     tcpServer.start();
 
     loop.loop();

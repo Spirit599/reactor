@@ -85,7 +85,7 @@ private:
 
 
 
-template<typename MSG, const char* TAG, typename CODEC = ProtobufCodec>
+template<typename MSG, const char* TAG>
 class ProtobufCodecT
 {
 public:
@@ -125,5 +125,5 @@ public:
 
 private:
     ProtobufMessageCallback1 messageCallback_;
-    CODEC codec_;
+    ProtobufCodec codec_;
 };

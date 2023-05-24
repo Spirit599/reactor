@@ -56,7 +56,7 @@ public:
     void handleWrite();
     void handleClose();
 
-    void sendMessage(const char* data, size_t len);
+    void sendMessageInLoop(const char* data, size_t len);
     void sendMessage(Buffer* buf);
 
     void setContext(const std::any& context)

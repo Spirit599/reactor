@@ -38,7 +38,7 @@ void ThreadPool::stop()
 
 void ThreadPool::put(Task task)
 {
-    while(!taskQueue_.put(task))
+    while(!taskQueue_.put(task) && running_)
         ;
 }
 

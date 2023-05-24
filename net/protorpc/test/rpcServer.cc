@@ -7,14 +7,21 @@
 class PrimeServiceImpl : public PrimeService
 {
 public:
+
+    PrimeServiceImpl(RpcServer* rpcServer)
+        :
+        rpcServer_(rpcServer)
+    {}
+
     virtual void Solve(google::protobuf::RpcController* controller,
                         const PrimeRequest* req,
                         PrimeResponse* resp,
                         google::protobuf::Closure* done)
     {
         LOG_INFO("PrimeServiceImpl::Solve");
-        resp->set_isprime(checkPrime(req->num()));
-        done->Run();
+        // resp->set_isprime(checkPrime(req->num()));
+        // done->Run();
+        rpcServer_->threadPool().put(std::bind(&PrimeServiceImpl::doTask, this, req->num(), resp, done));
     }
 
     bool checkPrime(int num)
@@ -27,7 +34,15 @@ public:
         return true;
     }
 
-    
+    void doTask(int num, PrimeResponse* resp, google::protobuf::Closure* done)
+    {
+        LOG_INFO("PrimeServiceImpl::doTask");
+        resp->set_isprime(checkPrime(num));
+        done->Run();
+    }
+
+private:
+    RpcServer* rpcServer_;
 };
 
 int main(int argc, char const *argv[])
@@ -35,9 +50,11 @@ int main(int argc, char const *argv[])
     
     EventLoop loop;
     InetAddress listenAddr(10013);
-    PrimeServiceImpl impl;
-
+    
     RpcServer rpcServer(&loop, listenAddr);
+
+    PrimeServiceImpl impl(&rpcServer);
+
     rpcServer.registerService(&impl);
 
     rpcServer.start();

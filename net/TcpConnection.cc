@@ -17,7 +17,7 @@ void defaultMessageCallback(const TcpConnectionPtr& conn, Buffer* buf, Timestamp
 {
     string message(conn->inputBuffer().retrieveAllAsString());
     LOG_TRACE("get message:%s", message.c_str());
-    conn->sendMessage(message.c_str(), message.size());
+    conn->sendMessageInLoop(message.c_str(), message.size());
 }
 
 TcpConnection::TcpConnection(EventLoop* loop, const string& name, int fd,
@@ -69,12 +69,19 @@ void TcpConnection::sendMessage(Buffer* buf)
 {
     if(loop_->isInLoopThread())
     {
-        sendMessage(buf->peek(), buf->readableBytes());
+        sendMessageInLoop(buf->peek(), buf->readableBytes());
+        buf->retrieveAll();
+    }
+    else
+    {
+        // fixme ??
+        LOG_INFO("send in other thread");
+        loop_->runInLoop(std::bind(&TcpConnection::sendMessageInLoop, this, buf->peek(), buf->readableBytes()));
         buf->retrieveAll();
     }
 }
 
-void TcpConnection::sendMessage(const char* data, size_t len)
+void TcpConnection::sendMessageInLoop(const char* data, size_t len)
 {
     ssize_t nwrote = 0;
     size_t remaining = len;
@@ -152,7 +159,7 @@ void TcpConnection::handleWrite()
             if(outputBuffer_.readableBytes() == 0)
             {
                 tcpConnectionChannel_.disablewriting();
-                //todo
+                //todo 写完的回调？
             }
         }
     }

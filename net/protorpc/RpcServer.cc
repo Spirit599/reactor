@@ -8,7 +8,8 @@
 
 RpcServer::RpcServer(EventLoop* loop, const InetAddress& listenAddr)
     :
-    server_(loop, listenAddr, "RpcServer")
+    server_(loop, listenAddr, "RpcServer"),
+    threadPool_(128, "RpcServerThreadPool")
 {
     server_.setConnectionCallback(std::bind(&RpcServer::onConnection, this, _1));
 }

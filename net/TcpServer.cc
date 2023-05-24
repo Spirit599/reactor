@@ -34,11 +34,11 @@ void TcpServer::setThreadNum(int numThread)
 void TcpServer::newConntion(int connfd, const InetAddress& peerAddr)
 {
     LOG_TRACE("connfd:%d ip:%s", connfd, peerAddr.addrToIpAddr().c_str());
-    EventLoop* loop = threadsPool_.getNextLoop();
+    EventLoop* ioLoop = threadsPool_.getNextLoop();
     string connName(name_ + "#" + ipPort_ + "#" + std::to_string(nextConnId_));
     InetAddress localAddr(getLocalAddr(connfd));
 
-    TcpConnectionPtr conn(new TcpConnection(loop,
+    TcpConnectionPtr conn(new TcpConnection(ioLoop,
                                             connName,
                                             connfd,
                                             localAddr,
@@ -52,7 +52,7 @@ void TcpServer::newConntion(int connfd, const InetAddress& peerAddr)
     conn->setCloseCallback(std::bind(&TcpServer::removeConntion, this, _1));
 
 
-    conn->connectionEstablished(); //todo
+    ioLoop->runInLoop(std::bind(&TcpConnection::connectionEstablished, conn));
 
 }
 
