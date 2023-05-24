@@ -8,3 +8,6 @@ add_executable(testCopyable testCopyable.cc)
 
 add_executable(testTimestamp testTimestamp.cc)
 target_link_libraries(testTimestamp base)
+
+add_executable(testThreadPool testThreadPool.cc)
+target_link_libraries(testThreadPool base)

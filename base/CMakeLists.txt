@@ -4,6 +4,7 @@
 set(base_SRCS
   Log.cc
   Timestamp.cc
+  ThreadPool.cc
 )
 
 add_library(base ${base_SRCS})
